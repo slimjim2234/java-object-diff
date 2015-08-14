@@ -16,6 +16,7 @@
 
 package de.danielbechler.diff.introspection;
 
+import com.google.common.base.Defaults;
 import de.danielbechler.diff.access.PropertyAwareAccessor;
 import de.danielbechler.diff.selector.BeanPropertyElementSelector;
 import de.danielbechler.util.Assert;
@@ -227,7 +228,9 @@ public class PropertyAccessor implements PropertyAwareAccessor
 	{
 		try
 		{
-			writeMethod.invoke(target, value);
+            if (writeMethod.getParameterTypes()[0].isPrimitive() && value == null) {
+                writeMethod.invoke(target, Defaults.defaultValue(writeMethod.getParameterTypes()[0]));
+            } else writeMethod.invoke(target, value);
 		}
 		catch (final Exception cause)
 		{
